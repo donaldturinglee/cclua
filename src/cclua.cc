@@ -41,6 +41,36 @@ void Lua::set_global(const std::string& name, const LuaValue& value) {
 	lua_setglobal(L_, name.c_str());
 }
 
+LuaValue Lua::get_table(const std::string& table, const std::string& key) {
+	int type = lua_getglobal(L_, table.c_str());
+	lua_getfield(L_, -1, key.c_str());
+	auto value = pop_value();
+	lua_pop(L_, 1);
+	return value;
+}
+
+void Lua::set_table(const std::string& table, const std::string& key, const LuaValue& value) {
+	int type = lua_getglobal(L_, table.c_str());
+	push_value(value);
+	lua_setfield(L_, -2, key.c_str());
+	lua_pop(L_, 1);
+}
+
+LuaValue Lua::get_table(const std::string& table, int index) {
+	int type = lua_getglobal(L_, table.c_str());
+	lua_geti(L_, -1, index);
+	auto value = pop_value();
+	lua_pop(L_, 1);
+	return value;
+}
+
+void Lua::set_table(const std::string& table, int index, const LuaValue& value) {
+	int type = lua_getglobal(L_, table.c_str());
+	push_value(value);
+	lua_seti(L_, -2, index);
+	lua_pop(L_, 1);
+}
+
 void Lua::push_value(const LuaValue& value) {
     switch (get_lua_type(value)) {
     	case LuaType::kNil:

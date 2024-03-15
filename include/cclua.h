@@ -20,6 +20,10 @@ public:
     bool execute(const std::string& script);
 	LuaValue get_global(const std::string& name);
 	void set_global(const std::string& name, const LuaValue& value);
+	LuaValue get_table(const std::string& table, const std::string& key);
+	void set_table(const std::string& table, const std::string& key, const LuaValue& value);
+	LuaValue get_table(const std::string& table, int index);
+	void set_table(const std::string& table, int index, const LuaValue& value);
 private:
 	bool pcall(int nargs = 0, int nresults = 0);
 	void push_value(const LuaValue& value);
