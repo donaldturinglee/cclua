@@ -71,6 +71,18 @@ void Lua::set_table(const std::string& table, int index, const LuaValue& value) 
 	lua_pop(L_, 1);
 }
 
+LuaValue Lua::get_registry(const LuaValue& key) {
+	push_value(key);
+	lua_gettable(L_, LUA_REGISTRYINDEX);
+	return pop_value();
+}
+
+void Lua::set_registry(const LuaValue& key, const LuaValue& value) {
+	push_value(key);
+	push_value(value);
+	lua_settable(L_, LUA_REGISTRYINDEX);
+}
+
 void Lua::push_value(const LuaValue& value) {
     switch (get_lua_type(value)) {
     	case LuaType::kNil:

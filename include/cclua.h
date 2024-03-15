@@ -24,6 +24,19 @@ public:
 	void set_table(const std::string& table, const std::string& key, const LuaValue& value);
 	LuaValue get_table(const std::string& table, int index);
 	void set_table(const std::string& table, int index, const LuaValue& value);
+	LuaValue get_registry(const LuaValue& key);
+	void set_registry(const LuaValue& key, const LuaValue& value);
+	
+	template<typename... Params>
+	LuaValue call(const std::string& function, const Params& ...params) {
+		int type = lua_getglobal(L_, function.c_str());
+		for(const auto& param : std::initializer_list<LuaValue>{params...}) {
+			push_value(param);
+		}
+		pcall(sizeof...(params), 1);
+		return pop_value();
+	}
+
 private:
 	bool pcall(int nargs = 0, int nresults = 0);
 	void push_value(const LuaValue& value);
