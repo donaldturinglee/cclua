@@ -1,5 +1,6 @@
 #include "cclua.h"
 #include <iostream>
+#include <vector>
 
 namespace cclua {
 
@@ -81,6 +82,15 @@ void Lua::set_registry(const LuaValue& key, const LuaValue& value) {
 	push_value(key);
 	push_value(value);
 	lua_settable(L_, LUA_REGISTRYINDEX);
+}
+
+std::vector<LuaValue> Lua::pop_values(int size) {
+	std::vector<LuaValue> results;
+	for(int i = size; i > 0; --i) {
+		results.push_back(get_value(-i));
+	}
+	lua_pop(L_, size);
+	return results;
 }
 
 void Lua::push_value(const LuaValue& value) {

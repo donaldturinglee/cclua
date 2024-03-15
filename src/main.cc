@@ -6,11 +6,16 @@ using namespace cclua;
 int main(int argc, char* argv[]) {
 
 	Lua lua;
+	lua.execute_file("scripts/main.lua");
 
-	lua.execute("function add(x, y) return x + y end");
-	LuaValue result = lua.call("add", LuaValue(LuaNumber::make(1)), LuaValue(LuaNumber::make(2)));
+	std::vector<LuaValue> result = lua.vcall("foo", LuaValue(LuaNumber::make(1)), LuaValue(LuaString::make("bar")));
 
-	std::cout << "The result is: " << to_string(result) << "\n";
-	
+	if(result.size() == 2) {
+		std::cout  << "Returned number: " << to_string(result[0]) << "\n";
+		std::cout  << "Returned string: " << to_string(result[1]) << "\n";
+	} else {
+		std::cerr << "Unexpected number of return values.\n";
+	}
+
 	return 0;
 }

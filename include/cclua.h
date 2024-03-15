@@ -37,11 +37,26 @@ public:
 		return pop_value();
 	}
 
+	template<typename... Params>
+	std::vector<LuaValue> vcall(const std::string& function, const Params& ...params) {
+		int stack_size = lua_gettop(L_);
+		int type = lua_getglobal(L_, function.c_str());
+		for(const auto& param : std::initializer_list<LuaValue>{params...}) {
+			push_value(param);
+		}
+		if(pcall(sizeof...(params), LUA_MULTRET)) {
+			int results = lua_gettop(L_) - stack_size;
+			return pop_values(results);
+		}
+		return std::vector<LuaValue>();
+	}
+
 private:
 	bool pcall(int nargs = 0, int nresults = 0);
 	void push_value(const LuaValue& value);
 	LuaValue get_value(int index);
 	LuaValue pop_value();
+	std::vector<LuaValue> pop_values(int size);
 	std::string pop_string();
 	lua_State* const L_;
 };
