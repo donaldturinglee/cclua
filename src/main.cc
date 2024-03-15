@@ -8,14 +8,9 @@ int main(int argc, char* argv[]) {
 	Lua lua;
 	lua.execute_file("scripts/main.lua");
 
-	std::vector<LuaValue> result = lua.vcall("foo", LuaValue(LuaNumber::make(1)), LuaValue(LuaString::make("bar")));
+	LuaValue result = lua.tcall("my_table", "add", true, LuaValue(LuaNumber::make(2)), LuaValue(LuaNumber::make(3)));
 
-	if(result.size() == 2) {
-		std::cout  << "Returned number: " << to_string(result[0]) << "\n";
-		std::cout  << "Returned string: " << to_string(result[1]) << "\n";
-	} else {
-		std::cerr << "Unexpected number of return values.\n";
-	}
+	std::cout << "Result of add: " << to_string(result) << "\n";
 
 	return 0;
 }

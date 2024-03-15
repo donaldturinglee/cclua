@@ -1,3 +1,5 @@
-function foo(num, str)
-	return num + 1, str .. " suffix"
-end
+my_table = {
+	add = function(self, a, b)
+		return a + b
+	end
+}

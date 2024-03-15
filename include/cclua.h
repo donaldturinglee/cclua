@@ -51,6 +51,26 @@ public:
 		return std::vector<LuaValue>();
 	}
 
+	template<typename... Params>
+	LuaValue tcall(const std::string& table, const std::string& function, bool include_self, const Params& ...params) {
+		int type = lua_getglobal(L_, table.c_str());
+		type = lua_getfield(L_, -1, function.c_str());
+		if(include_self) {
+			lua_getglobal(L_, table.c_str());
+		}
+
+		for(const auto& param : std::initializer_list<LuaValue>{params...}) {
+			push_value(param);
+		}
+		int params_size = sizeof...(params) + (include_self ? 1 : 0);
+		pcall(params_size, 1);
+
+		auto result = pop_value();
+		lua_pop(L_, 1);
+
+		return result;
+	}
+
 private:
 	bool pcall(int nargs = 0, int nresults = 0);
 	void push_value(const LuaValue& value);
