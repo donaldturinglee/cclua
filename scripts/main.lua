@@ -1,1 +1,4 @@
-print("Hello C++")
+whom = "C++"
+function hello()
+	print("Hello " .. whom)
+end

@@ -18,6 +18,8 @@ public:
 	virtual ~Lua();
 	bool execute_file(const std::string& path);
     bool execute(const std::string& script);
+	LuaValue get_global(const std::string& name);
+	void set_global(const std::string& name, const LuaValue& value);
 private:
 	bool pcall(int nargs = 0, int nresults = 0);
 	void push_value(const LuaValue& value);

@@ -31,6 +31,42 @@ bool Lua::execute(const std::string& script) {
     return true;
 }
 
+LuaValue Lua::get_global(const std::string& name) {
+	lua_getglobal(L_, name.c_str());
+	return pop_value();
+}
+
+void Lua::set_global(const std::string& name, const LuaValue& value) {
+	push_value(value);
+	lua_setglobal(L_, name.c_str());
+}
+
+void Lua::push_value(const LuaValue& value) {
+    switch (get_lua_type(value)) {
+    	case LuaType::kNil:
+    	    lua_pushnil(L_);
+    	    break;
+    	case LuaType::kBoolean:
+    	    lua_pushboolean(L_, std::get<LuaBoolean>(value).value ? 1 : 0);
+    	    break;
+    	case LuaType::kNumber:
+    	    lua_pushnumber(L_, std::get<LuaNumber>(value).value);
+    	    break;
+    	case LuaType::kString:
+    	    lua_pushstring(L_, std::get<LuaString>(value).value.c_str());
+    	    break;
+    	case LuaType::kFunction:
+    	    assert(false && "pushing a Lua function is not supported");
+    	    break;
+    	case LuaType::kTable:
+    	    assert(false && "pushing a Lua table is not supported");
+    	    break;
+    	case LuaType::kLightUserData:
+    	    lua_pushlightuserdata(L_, std::get<LuaLightUserData>(value).value);
+    	    break;
+    }
+}
+
 LuaValue Lua::get_value(int index) {
     switch (lua_type(L_, index)) {
     	case LUA_TNIL:

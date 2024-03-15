@@ -118,6 +118,8 @@ inline std::string to_string(const LuaValue& value) {
     	    return "table";
     	case LuaType::kLightUserData:
     	    return "lightuserdata";
+		default:
+			return "Unknown type";
     }
 }
 
