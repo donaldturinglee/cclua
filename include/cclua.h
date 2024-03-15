@@ -71,6 +71,51 @@ public:
 		return result;
 	}
 
+	template<typename... Params>
+	std::vector<LuaValue> vtcall(const std::string& table, const std::string& function, bool include_self, const Params& ...params) {
+		int type = lua_getglobal(L_, table.c_str());
+		int stack_size = lua_gettop(L_);
+		type = lua_getfield(L_, -1, function.c_str());
+		if(include_self) {
+			lua_getglobal(L_, table.c_str());
+		}
+		for(const auto& param : std::initializer_list<LuaValue>{params...}) {
+			push_value(param);
+		}
+
+		auto results = std::vector<LuaValue>();
+		int params_size = sizeof...(params) + (include_self ? 1 : 0);
+		if(pcall(params_size, LUA_MULTRET)) {
+			int results_size = lua_gettop(L_) - stack_size;
+			results = pop_values(results_size);
+		}
+		lua_pop(L_, 1);
+		return results;
+	}
+
+	inline LuaValue resume(const std::string& function) {
+		lua_State* t = lua_newthread(L_);
+		int type = lua_getglobal(t, function.c_str());
+
+		int results_size = 0;
+		const int status = lua_resume(t, L_, 0, &results_size);
+
+		if(status != LUA_OK && status != LUA_YIELD) {
+			std::cout << "[cclua::resume] " << lua_tostring(t, -1) << "\n";
+			lua_pop(t, 1);
+			return LuaNil::make();
+		}
+
+		if(results_size == 0) {
+			return LuaNil::make();
+		}
+
+		const int value = lua_tointeger(t, -1);
+		lua_pop(t, results_size);
+		lua_pop(L_, 1);
+		return LuaNumber::make(value);
+	}
+
 private:
 	bool pcall(int nargs = 0, int nresults = 0);
 	void push_value(const LuaValue& value);
