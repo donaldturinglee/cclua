@@ -1,7 +1,6 @@
 #ifndef CCLUA_H
 #define CCLUA_H
 
-#include "lua_type.h"
 
 #include <lua.hpp>
 #include <algorithm>
@@ -9,6 +8,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
+
+#include "lua_type.h"
+#include "lua_module.h"
 
 namespace cclua {
 
@@ -115,6 +117,9 @@ public:
 		lua_pop(L_, 1);
 		return LuaNumber::make(value);
 	}
+
+	void register_module(LuaModule& module);
+	static const int version = 1;
 
 private:
 	bool pcall(int nargs = 0, int nresults = 0);

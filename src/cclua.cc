@@ -84,6 +84,13 @@ void Lua::set_registry(const LuaValue& key, const LuaValue& value) {
 	lua_settable(L_, LUA_REGISTRYINDEX);
 }
 
+void Lua::register_module(LuaModule& module) {
+	lua_createtable(L_, 0, module.get_lua_register().size() - 1);
+	int upvalues_size = module.push_lua_upvalues(L_);
+	luaL_setfuncs(L_, module.get_lua_register().data(), upvalues_size);
+	lua_setglobal(L_, module.get_lua_name().c_str());
+}
+
 std::vector<LuaValue> Lua::pop_values(int size) {
 	std::vector<LuaValue> results;
 	for(int i = size; i > 0; --i) {
